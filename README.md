@@ -1,31 +1,11 @@
-# Typst Renderer
+# Typst in Obsidian
 
-Renders `typst` code blocks, and optionally math blocks, into images using [Typst](https://github.com/typst/typst) through the power of WASM! This is still very much in development, so suggestions and bugs are welcome!
+This plugin is a fork of [fenjalien/obsidian-typst](https://github.com/fenjalien/obsidian-typst), using [typst.ts](https://github.com/Myriad-Dreamin/typst.ts) instead of the WASM binding written by the original author, also cutting some features that are not necessary for me.
 
-## Small Things to NOTE
-- Typst does not currently support exporting to HTML only PDFs, PNGs and SVGs. So due to image scaling, the rendered views may look a bit terrible. If you know how to fix this PLEASE HELP.
-- File paths should be relative to the vault folder.
-- To help with loading times the web assembly file must be downloaded separately. This will automatically happen the first time the plugin is enabled and after an update!
-
-## Versions
-
-| Plugin | Typst |
-|-|-|
-| 0.10 | 0.11.0 |
-| 0.9 | 0.10.0 |
-| 0.8 | 0.9.0 |
-| 0.7 | 0.8.0 |
-| 0.6 | [522708b](https://github.com/typst/typst/commit/522708b9df0b9b2f8265938aa1f0aeda8e6e6c1f) (Some commits after 0.7.0 to include SVG export) |
-| 0.5 | 0.6.0 |
-| 0.4 | 0.3.0 |
-| 0.3 | 0.2.0 |
+Renders `typst` code blocks, and optionally math blocks, into SVGs using [Typst](https://github.com/typst/typst).
 
 ## Using Packages
-On desktop the plugin supports reading packages from the [`@preview`](https://github.com/typst/packages#downloads) and [`@local`](https://github.com/typst/packages#local-packages) namespaces. If a package cannot be found in either folder and the "Download Missing Packages" setting is on, the package will be downloaded and saved within the current vault in the pulgin's folder. 
-
-On mobile only the `@preview` namespace is supported and will always download missing packages to the vault.
-
-You can view the downloaded packages in the settings and choose which ones to delete.
+Packages are supported. However, they are not loadad from local typst cache due to browser (thus electron) security restrictions.
 
 ## Math Block Usage
 The plugin can render `typst` inside math blocks! By default this is off, to enable it set the "Override Math Blocks" setting or use the "Toggle math block override" command. Math block types are conserved between Obsidian and Typst, `$...$` -> `$...$` and `$$...$$` -> `$ ... $`.
@@ -49,12 +29,12 @@ The following variables are defined for you in all preambles to help style the o
 - `SIZE`: The font size as defined by the CSS property `"--font-text-size"`
 - `THEME`: A string defining the current theme of Obsidian. Either "light" or "dark".
 
-The following are the default preambles, I highly recommend you check this on each update to make sure you don't miss any changes that could break things. That being said you don't need them they are merely recommended.
+The following are the default preambles.
 <details>
 <summary>Shared</summary>
 
 ```
-#set text(fill: white, size: SIZE)
+#set text(fill: black, size: SIZE)
 #set page(width: WIDTH, height: HEIGHT)
 ```
 </details>
@@ -74,59 +54,14 @@ The following are the default preambles, I highly recommend you check this on ea
 ```
 </details>
 
-## Known Issues
-### Runtime Error Unreachable or Recursive Use Of Object
-These occur when the Typst compiler panics for any reason and means the compiler cannot be used again until it is restarted. There should be more information in the console log so please create an issue with this error!
-
-## Example
-
-```
-```typst
-= Fibonacci sequence
-The Fibonacci sequence is defined through the
-_recurrence relation_ $F_n = F_(n-1) + F_(n-2)$.
-It can also be expressed in closed form:
-
-$ F_n = floor(1 / sqrt(5) phi.alt^n), quad
-  phi.alt = (1 + sqrt(5)) / 2 $
-
-#let count = 10
-#let nums = range(1, count + 1)
-#let fib(n) = (
-  if n <= 2 { 1 }
-  else { fib(n - 1) + fib(n - 2) }
-)
-
-The first #count numbers of the sequence are:
-
-#align(center, table(
-  columns: count,
-  ..nums.map(n => $F_#n$),
-  ..nums.map(n => str(fib(n))),
-))
-
-```​
-```
-
-<img src="assets/example.png">
+### Color Scheme
+This plugin does not rerender when the color scheme changes. By default, the foreground color is set to black and uses a CSS filter to revert black color to white when the theme is dark. This interferes with other colors though.
 
 ## Installation
-Install "Typst Renderer" from the community plugins tab in settings
-
-or 
+This plugin is not in plugin registry yet, so you have to install it manually.
 
 Install it by copying `main.js`, `styles.css`, `obsidian_typst_bg.wasm` and `manifest.json` from the releases tab to the folder `.obsidian/plugins/typst` in your vault.
 
 ## TODO / Goals (In no particular order)
-- [x] Better font loading
-- [x] Fix importing
-- [x] Fix Github Actions
-- [x] Better error handling
-- [x] ? Fix output image scaling
-- [ ] Use HTML output
-- [x] Override default equation rendering
-- [ ] Custom editor for `.typ` files
-- [x] Mobile file reading
-- [x] Automate package downloading
-- [ ] Use `sys.stdin` for preambles instead of modifying the source cod
-- [ ] Overhall plugin structure (mostly communication with the webworker)
+- [ ] Support loading fonts
+- [ ] Adapt to color scheme changes

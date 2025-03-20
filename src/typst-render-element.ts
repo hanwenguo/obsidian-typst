@@ -1,7 +1,6 @@
 export default class TypstRenderElement extends HTMLElement {
-    static compile: (path: string, source: string, size: number, display: boolean, fontSize: number) => Promise<ImageData | string>;
+    static compile: (source: string, size: number, display: boolean, fontSize: number) => Promise<ImageData | string>;
     static nextId = 0;
-    static prevHeight = 0;
 
     // The Element's Id
     id: string
@@ -9,24 +8,15 @@ export default class TypstRenderElement extends HTMLElement {
     num: string
 
     abortController: AbortController
-    format: string
     source: string
-    path: string
     display: boolean
     resizeObserver: ResizeObserver
     size: number
-    math: boolean
-
-    canvas: HTMLCanvasElement
 
     async connectedCallback() {
         if (!this.isConnected) {
             console.warn("Typst Renderer: Canvas element has been called before connection");
             return;
-        }
-
-        if (this.format == "image" && this.canvas == undefined) {
-            this.canvas = this.appendChild(createEl("canvas", { attr: { height: TypstRenderElement.prevHeight }, cls: "typst-doc" }))
         }
 
         this.num = TypstRenderElement.nextId.toString()
@@ -47,9 +37,6 @@ export default class TypstRenderElement extends HTMLElement {
     }
 
     disconnectedCallback() {
-        if (this.format == "image") {
-            TypstRenderElement.prevHeight = this.canvas.height
-        }
         if (this.display && this.resizeObserver != undefined) {
             this.resizeObserver.disconnect()
         }
@@ -70,10 +57,8 @@ export default class TypstRenderElement extends HTMLElement {
                 }
 
                 try {
-                    let result = await TypstRenderElement.compile(this.path, this.source, this.size, this.display, fontSize)
-                    if (result instanceof ImageData && this.format == "image") {
-                        this.drawToCanvas(result)
-                    } else if (typeof result == "string" && this.format == "svg") {
+                    let result = await TypstRenderElement.compile(this.source, this.size, this.display, fontSize)                    
+					if (typeof result == "string") {
                         this.innerHTML = result;
                         let child = (this.firstElementChild as SVGElement);
                         child.setAttribute("width", child.getAttribute("width")!.replace("pt", ""))
@@ -100,22 +85,5 @@ export default class TypstRenderElement extends HTMLElement {
         } catch (error) {
             return
         }
-    }
-
-    drawToCanvas(image: ImageData) {
-        let ctx = this.canvas.getContext("2d")!;
-        // if (this.display) {
-        //     this.style.width = "100%"
-        //     this.style.height = ""
-        // } else {
-        //     this.style.verticalAlign = "bottom"
-        //     this.style.height = `${this.size}px`
-        // }
-        this.canvas.width = image.width
-        this.canvas.height = image.height
-
-        ctx.imageSmoothingEnabled = true
-        ctx.imageSmoothingQuality = "high"
-        ctx.putImageData(image, 0, 0);
     }
 }

@@ -20,11 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: dtolnay/rust-toolchain@stable
-
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -34,7 +29,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run wasm-build
+        run: npm run build
 
       - name: Create release
         env:
@@ -45,4 +40,4 @@ jobs:
           gh release create "$tag" \
             --title="$tag" \
             --draft \
-            main.js manifest.json styles.css pkg/obsidian_typst_bg.wasm
+            main.js manifest.json styles.css

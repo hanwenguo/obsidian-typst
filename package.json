@@ -1,35 +1,32 @@
 {
-	"name": "obsidian-typst-plugin",
-	"version": "0.10.0",
+	"name": "obsidian-typst",
+	"version": "1.0.0-rc.1",
 	"description": "Renders `typst` code blocks to images with Typst.",
 	"main": "main.js",
 	"scripts": {
 		"build-dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"wasm": "wasm-pack build compiler --target web --out-dir ../pkg",
-		"wasm-dev": "wasm-pack build compiler --target web --dev --out-dir ../pkg",
-		"wasm-build-dev": "npm run wasm-dev && npm run build-dev",
-		"wasm-build": "npm run wasm && npm run build",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
-	"author": "fenjalien",
+	"author": "hanwenguo",
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@types/node": "^20",
 		"@typescript-eslint/eslint-plugin": "^5",
 		"@typescript-eslint/parser": "^5",
 		"builtin-modules": "^3",
-		"esbuild": "^0.18",
+		"esbuild": "^0.25.1",
 		"esbuild-plugin-inline-worker": "^0.1.1",
+		"find-cache-dir": "^5.0.0",
 		"typescript": "^5.1"
 	},
 	"dependencies": {
-		"fflate": "^0.8.1",
-		"js-untar": "^2.0.0",
+		"@myriaddreamin/typst-ts-renderer": "0.5.5-rc7",
+		"@myriaddreamin/typst-ts-web-compiler": "0.5.5-rc7",
+		"@myriaddreamin/typst.ts": "0.5.5-rc7",
 		"obsidian": "latest",
-		"obsidian-typst": "file:pkg",
-		"svgo": "^3.0.2",
 		"tslib": "^2"
-	}
+	},
+	"packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
 }

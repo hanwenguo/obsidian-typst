@@ -33,7 +33,7 @@ let inlineWorkerPlugin = {
                     return worker
                 }`,
                 loader: 'js',
-                 };
+                };
             }
         );
     },
@@ -83,8 +83,12 @@ async function buildWorker(workerPath) {
     bundle: true,
     minify: true,
     outfile: bundlePath,
-    target: 'es2018',
+	sourcemap: prod ? false : "inline",
+    target: 'es2024',
     format: 'cjs',
+	plugins: [
+		wasmPlugin
+	]
   });
 
   return fs.promises.readFile(bundlePath, {encoding: 'utf-8'});
@@ -113,7 +117,7 @@ const context = await esbuild.context({
         "@lezer/lr",
         ...builtins],
     format: "cjs",
-    target: "es2018",
+    target: "es2024",
     logLevel: "info",
     sourcemap: prod ? false : "inline",
     treeShaking: true,
